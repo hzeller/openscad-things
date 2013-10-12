@@ -12,6 +12,7 @@ hood_aspect=1920/1080;
 hood_proximal_radius=4;
 hood_distal_radius=bracket_height * 0.6;
 
+snap_fit_gap=0.15;          // necessary gap to have things fit smootly together.
 snap_width=wall_width/2;   // Wall width where things are snapped together.
 snap_thickness=wall_width - 0.25;
 
@@ -75,8 +76,8 @@ module bracket() {
     difference() {
 	base_bracket();
 	// Punch out the access area.
-	translate([0, -bracket_height/2, 0]) cube([mounting_space, bracket_height, 2 * bracket_depth], center=true);
-	scale([1, 1/hood_aspect, 1]) cylinder(r=mounting_space/2, h=3 * wall_width, center=true);
+	translate([0, -bracket_height/2, 0]) cube([mounting_space + 2 * snap_fit_gap, bracket_height, 2 * bracket_depth], center=true);
+	scale([1, 1/hood_aspect, 1]) cylinder(r=mounting_space/2 + snap_fit_gap, h=3 * wall_width, center=true);
     }
 }
 
@@ -106,27 +107,28 @@ module curved_hood() {
 }
 
 // We mount the hood on a base-plate, that will snap into the bracket.
-module hood_baseplate() {
+// The snap_adjust is the addional amount it the holes should be sized.
+module hood_baseplate(snap_adjust=0) {
     difference() {
 	union() {
 	    // Plate we 'mount' the hood on. This is thinner (only snap-width) than the usual wall width, because
 	    // we want to snap to halfs together.
-	    translate([0, 0, snap_width/2]) cube([mounting_plate_width, mounting_plate_height, snap_width], center=true);
+	    translate([0, 0, snap_width/2]) cube([mounting_plate_width - 2 * snap_adjust, mounting_plate_height - 2 * snap_adjust, snap_width], center=true);
 	    
 	    // In the mounting space area, we have a thicker part of the plate, so that after mounting, things are flush.
-	    translate([0, -bracket_height/4, wall_width/2]) cube([mounting_space, bracket_height/2, wall_width], center=true);
+	    translate([0, -bracket_height/4, wall_width/2]) cube([mounting_space, bracket_height/2+wall_width, wall_width], center=true);
 	    scale([1, 1/hood_aspect, 1]) cylinder(r=mounting_space/2, h=wall_width);
 
 	    // rounded front.
-	    translate([-mounting_space/2, -bracket_height/2, wall_width/2]) rotate([0, 90, 0]) cylinder(r=wall_width/2, h=mounting_space);
+	    translate([-mounting_space/2, -(bracket_height + wall_width)/2, wall_width/2]) rotate([0, 90, 0]) cylinder(r=wall_width/2, h=mounting_space);
 	}
 	// mounting holes.
-	translate([mounting_plate_width/2 - 2.5 - 2, mounting_plate_height/2 - 4.5, -1]) cylinder(r=2.5, h=wall_width + 2);
-	translate([-(mounting_plate_width/2 - 2.5 - 2), mounting_plate_height/2 - 4.5, -1]) cylinder(r=2.5, h=wall_width + 2);
+	translate([mounting_plate_width/2 - 2.5 - 2, mounting_plate_height/2 - 4.5, -1]) cylinder(r=2.5 + snap_adjust, h=wall_width + 2);
+	translate([-(mounting_plate_width/2 - 2.5 - 2), mounting_plate_height/2 - 4.5, -1]) cylinder(r=2.5 + snap_adjust, h=wall_width + 2);
 
 	// and squares.
-	translate([(mounting_plate_width + mounting_space) / 4, -mounting_plate_height/4, 0]) cube([2, 6, 10], center=true);
-	translate([-(mounting_plate_width + mounting_space) / 4, -mounting_plate_height/4, 0]) cube([2, 6, 10], center=true);
+	translate([(mounting_plate_width + mounting_space) / 4, -mounting_plate_height/4, 0]) cube([2 + 2*snap_adjust, 6 +2* snap_adjust, 10], center=true);
+	translate([-(mounting_plate_width + mounting_space) / 4, -mounting_plate_height/4, 0]) cube([2 + 2*snap_adjust, 6 + 2*snap_adjust, 10], center=true);
     }
 }
 
@@ -141,23 +143,23 @@ module mounted_hood() {
 module clickable_bracket() {
     difference() {
 	bracket();
-	hood_baseplate();
-	translate([0, 0, -0.1]) hood_baseplate(); // properly punch
+	hood_baseplate(-snap_fit_gap);
+	translate([0, 0, -0.1]) hood_baseplate(-snap_fit_gap); // properly punch
     }
 }
 
-// Now, let's print these components next to each other.
-
-hood_print_location_y=bracket_height/2 + 1;
+// Now, let's print these components next to each other. We essentially take
+// them from the mounted position and unfold them by turning the bracket 180 degrees
+// on its back.
+print_offset_y=bracket_height/2 + wall_width + 1;
 module print_hood() {
     // The hood is already flush with the bottom.
-    translate([0, hood_print_location_y, 0]) mounted_hood();
+    translate([0, print_offset_y, 0]) mounted_hood();
 }
 
-bracket_print_location_y=bracket_height/2 + wall_width + 1;
 module print_bracket() {
     // The hood needs to be turned around to be printed flat on its back.
-    rotate([180, 0, 0]) translate([0, bracket_print_location_y, -wall_width]) clickable_bracket();
+    rotate([180, 0, 0]) translate([0, print_offset_y, -wall_width]) clickable_bracket();
 }
 
 module print() {
