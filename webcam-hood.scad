@@ -12,7 +12,7 @@ hood_aspect=1920/1080;
 hood_proximal_radius=4;
 hood_distal_radius=bracket_height * 0.6;
 
-snap_fit_gap=0.15;          // necessary gap to have things fit smootly together.
+snap_fit_gap=0.15;         // The gap between fitting components.
 snap_width=wall_width/2;   // Wall width where things are snapped together.
 snap_thickness=wall_width - 0.25;
 
@@ -81,7 +81,7 @@ module bracket() {
     }
 }
 
-// Something that punches a hole wherever the hood is.
+// The solid shape of the hood.
 module outer_hood_volume() {
     translate([0, 0, -wall_width - 0.1]) scale([hood_aspect, 1, 1]) cylinder(h=hood_height, r1=hood_proximal_radius, r2=hood_distal_radius);
 }
@@ -90,10 +90,11 @@ module outer_hood_volume() {
 module straight_hood() {
     difference() {
 	difference() {
+	    // This difference make it hollow.
 	    outer_hood_volume();
 	    translate([0, 0, wall_width]) outer_hood_volume();
 	}
-	camera(); // We're a bit below. Flatten that.
+	camera(); // We're a bit below. Cut it wherever the camera is.
     }
 }
 
@@ -135,7 +136,7 @@ module hood_baseplate(snap_adjust=0) {
 module mounted_hood() {
     difference() {
 	hood_baseplate();
-	outer_hood_volume();
+	outer_hood_volume();  // Punch a hole.
     }
     curved_hood();
 }
@@ -191,4 +192,3 @@ module complete_mount() {
 //complete_mount();
 //mounting_animation();
 print();
-
