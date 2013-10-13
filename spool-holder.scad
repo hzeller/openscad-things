@@ -15,20 +15,21 @@ developer_view=false;
 
 // User parameters (just mm)
 spool_hole_diameter = 55;       // The diameter of the hole in the spool
-spool_material_thickness = 3;   // The thickness of the spool material.
 axis_diameter = 25;             // Diameter of the axis we want to put it on.
                                 //   (plus like 2mm to account for less accuracy)
+spool_material_thickness = 3;   // The thickness of the spool material.
 print_thickness = 1.2;          // Printed thickness of the walls,
-                                // as determined by the perimeters (see your				
+                                // as determined by the perimeters (see slicer)			
 arm_count = 8;                  // Number of arms in this star shape.
 
-holder_height = 12;             // The height of the holder.
-outer_flare = 4;                // Additional width of the holder
-                                // (what would be a good word for this?)
+// Probably nothing to change here.
+holder_height = spool_material_thickness + 8; // The total height of the holder.
+flare_angle=35;                // 0..40: Angle of the flare from the middle.
+outer_flare = (holder_height - spool_material_thickness)/ (2 * tan(90 - flare_angle));
 
 
 // -- local settings
-$fn=24;  // Resolution of round faces. More is more smooth but blows up file-size.
+$fn=48;  // Resolution of round faces. More is more smooth but blows up file-size.
 inner_r=axis_diameter / 2;
 outer_r=spool_hole_diameter / 2;
 outer_rings_height=(holder_height - spool_material_thickness)/2;
