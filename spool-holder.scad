@@ -1,4 +1,6 @@
+// (c) h.zeller@acm.org Creative Commons license BY-SA
 // Spool holder.
+//
 // Spools have a hole to be placed on some axis. Usually the hole
 // is bigger than the axis; this spool holder is a spacer between axis and spool.
 
@@ -92,6 +94,6 @@ if (developer_view) {
 	}
     }
 } else {
-    // We create a solid. It is simpler for the slicer to create a cirumreference
+    // We create a solid. It is simpler for the slicer to create a shell.
     solid_cross();
 }
