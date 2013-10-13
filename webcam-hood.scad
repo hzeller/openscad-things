@@ -4,7 +4,7 @@ wall_width=1.6;
 
 bracket_depth=5 + wall_width/2;
 bracket_width=45;
-bracket_height=30;  // should be 29, but tolerances don't seem to work out.
+bracket_height=29;
 bracket_angle=4.7;
 
 hood_height=25;
@@ -12,7 +12,7 @@ hood_aspect=1920/1080;
 hood_proximal_radius=4;
 hood_distal_radius=bracket_height * 0.6;
 
-snap_fit_gap=0.15;         // The gap between fitting components.
+snap_fit_gap=0.75;         // The gap between fitting components.
 snap_width=wall_width/2;   // Wall width where things are snapped together.
 snap_thickness=wall_width - 0.25;
 
