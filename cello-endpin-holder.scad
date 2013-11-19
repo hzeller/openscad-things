@@ -2,6 +2,10 @@ $fn=96;
 epsilon=0.02;
 m4_hex_dia = 8.1;
 m4_hex_thick=3.2;
+
+m3_hex_dia = 6.3;
+m3_hex_thick=2.3;
+
 m8_hex_dia = 15.6;
 m8_hex_thick=6.3;
 m8_washer_thickness=1.5;
@@ -12,12 +16,14 @@ pin_wall_thick=2;
 pin_r=3.2;  // Radius of the pin measured.
 pin_straight_len = 9;
 pin_tip_len = 4;
+pin_collar_r=6+0.5;
 
 // vadda
 /**/
 pin_r = 8.5/2;
 pin_straight_len = 12;
 pin_tip_len = 7;
+pin_collar_r=7+0.5;
 /**/
 
 hinge_wall=2.5;      // min. wall around hinge.
@@ -43,22 +49,26 @@ base_thick = 1.5;
 base_dia = hinge_axis_len + m8_hex_thick + 10;
 
 // securing screw.
-screw_length = 9;
+screw_length = 7;
 screw_wall_thick = 0.5;
 screw_offset = 3;
 
 module m_screw(radius, hex_radius, hex_thick, head_diameter, slen, extension) {
     cylinder(r=radius, h=slen + epsilon);
-    translate([0, 0, slen]) cylinder(r=head_diameter, h=hex_thick + extension);
+    translate([0, 0, slen]) cylinder(r=head_diameter/2, h=hex_thick + extension);
     translate([0, 0, -extension]) cylinder(r=hex_radius, h=hex_thick + extension, $fn=6);
 }
 
 module screw_m4(slen, extension=0) {
-    m_screw(4.4/2, m4_hex_dia/2, 2, 7/2, slen, extension);
+    m_screw(4.4/2, m4_hex_dia/2, 2, 7, slen, extension);
+}
+
+module screw_m3(slen, extension=0) {
+    m_screw(3.4/2, m3_hex_dia/2, m3_hex_thick, 6, slen, extension);
 }
 
 module screw_m8(slen, extension=0) {
-    m_screw(8.4/2, m8_hex_dia/2, 6, 16.5/2, slen, extension);
+    m_screw(8.4/2, m8_hex_dia/2, 6, 16.5, slen, extension);
 }
 
 module pin(d=2 * pin_r) {
@@ -71,16 +81,16 @@ module pin_holder(r=pin_r) {
     assign(block_h = hinge_rotate_block_height,
 	   block_d = hinge_rotate_block_depth,
 	   pin_outer_radius = r + pin_wall_thick,
-           pin_height = pin_straight_len + pin_tip_len + pin_wall_thick) {
+           pin_height = pin_straight_len + pin_tip_len) {
 	difference() {
-	    union() {
+	    hull() {
 		translate([-(block_d)/2, -pin_outer_radius, 0]) cube([block_d, 2 * pin_outer_radius, block_h]); // hinge block
-		translate([0, 0, block_h]) cylinder(h=pin_height - pin_outer_radius, r=pin_outer_radius);  // main cylinde
-		translate([0, 0, block_h + pin_height - pin_outer_radius]) sphere(r=pin_outer_radius);
-		translate([0, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) cylinder(r=m4_hex_dia/2 + screw_wall_thick, h=screw_length + pin_r);
+		translate([0, 0, block_h]) cylinder(h=pin_height, r=pin_outer_radius);  // main cylinde
+		translate([0, 0, block_h + pin_height - 2]) cylinder(h=2, r=pin_collar_r);
+		translate([0, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) cylinder(r=m3_hex_dia/2 + screw_wall_thick, h=screw_length + pin_r);
 	    }
-	    translate([0, 0, block_h]) pin(d=2*r);  // make space for the pin
-	    #translate([pin_r, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) screw_m4(screw_length, 3); // space for screw
+	    #translate([0, 0, block_h]) pin(d=2*r);  // make space for the pin
+	    #translate([pin_r, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) screw_m3(screw_length, 3); // space for screw
 	    translate([0, 30, block_h/2]) rotate([90, 0, 0]) cylinder(r=hinge_axis_r, h=60); // hinge hole
 	}
     }
@@ -96,7 +106,7 @@ module baseplate(dist=hinge_rotate_block_width + 2*m8_washer_thickness) {
 	}
 
 	// We substract the space the rotating block would need.
-	translate([-dist/2, 0, hinge_center_z + base_thick]) scale([1, 1.8, 1]) rotate([0, 90, 0]) cylinder(r=hinge_center_z, h=dist);
+	translate([-dist/2, 0, hinge_center_z + base_thick]) scale([1, 1.5, 1]) rotate([0, 90, 0]) cylinder(r=hinge_center_z, h=dist);
 
 	// .. also the space above the axis should generally be free.
 	translate([-dist/2, -base_dia/2, hinge_center_z + base_thick - hinge_axis_r]) cube([dist, base_dia, base_dia]);
@@ -125,9 +135,9 @@ module xray() {
 }
 
 //xray();
-//baseplate();
+baseplate();
 //display_mount();
 //print_endpin_holder();
-pin_holder(r=pin_r);
+//pin_holder(r=pin_r);
 //screw_m4(screw_length);
 //translate([pin_r, 0, 0]) rotate([0, 90, 0]) screw_m4(screw_length);
