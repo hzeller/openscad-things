@@ -4,13 +4,17 @@ m4_hex_dia = 8.1;
 m4_hex_thick=3.2;
 
 m3_hex_dia = 6.3;
+m3_head_dia = m3_hex_dia;
 m3_hex_thick=2.3;
+m3_head_thick=m3_hex_thick;
 
 m8_hex_dia = 15.6;
+m8_head_dia = m8_hex_dia;
 m8_hex_thick=6.3;
+m8_head_thick=m8_hex_thick;
 m8_washer_thickness=1.5;
 
-pin_wall_thick=2;
+pin_wall_thick=2;  // Wall around pin.
 
 // mine.
 pin_r=3.2;  // Radius of the pin measured.
@@ -20,9 +24,9 @@ pin_collar_r=6+0.5;
 
 // vadda
 /**/
-pin_r = 8.5/2;
+pin_r = 8.6/2;
 pin_straight_len = 12;
-pin_tip_len = 7;
+pin_tip_len = 8.5;
 pin_collar_r=7+0.5;
 /**/
 
@@ -39,42 +43,50 @@ hinge_rotate_block_height=2 * (hinge_axis_r + hinge_wall);
 hinge_rotate_block_depth=max(hinge_rotate_block_height, 2 * (pin_r + pin_wall_thick));
 hinge_rotate_block_width=2*(pin_r + pin_wall_thick);
 
+// The radius the square rotate block consumes when rotating around
+// its axis.
 hinge_rotate_block_radius=sqrt(hinge_rotate_block_height*hinge_rotate_block_height
-                      + hinge_rotate_block_depth*hinge_rotate_block_depth)/2;
+    + hinge_rotate_block_depth*hinge_rotate_block_depth)/2;
+// The axis is high enough to let a bit room to rotate.
 hinge_center_z = hinge_rotate_block_radius + 2;
 		  
-hinge_mount_block_thick=(hinge_axis_len + m8_hex_thick - 2 * m8_washer_thickness - hinge_rotate_block_width)/2;
+hinge_mount_block_thick=(hinge_axis_len + m8_head_thick - 2 * m8_washer_thickness - hinge_rotate_block_width)/2;
 
 base_thick = 1.5;
-base_dia = hinge_axis_len + m8_hex_thick + 10;
+base_dia = hinge_axis_len + m8_head_thick + 10;
 
 // securing screw.
 screw_length = 7;
 screw_wall_thick = 0.5;
 screw_offset = 3;
 
-module m_screw(radius, hex_radius, hex_thick, head_diameter, slen, extension) {
+module m_screw(radius, hex_dia, hex_thick, head_dia, head_thick, slen, extension) {
     cylinder(r=radius, h=slen + epsilon);
-    translate([0, 0, slen]) cylinder(r=head_diameter/2, h=hex_thick + extension);
-    translate([0, 0, -extension]) cylinder(r=hex_radius, h=hex_thick + extension, $fn=6);
+    translate([0, 0, slen]) cylinder(r=head_dia/2, h=head_thick + extension);
+    translate([0, 0, -extension]) cylinder(r=hex_dia/2, h=hex_thick + extension, $fn=6);
 }
 
 module screw_m4(slen, extension=0) {
-    m_screw(4.4/2, m4_hex_dia/2, 2, 7, slen, extension);
+    m_screw(4.4/2, m4_hex_dia, 2, 7, slen, extension);
 }
 
 module screw_m3(slen, extension=0) {
-    m_screw(3.4/2, m3_hex_dia/2, m3_hex_thick, 6, slen, extension);
+    m_screw(3.4/2, m3_hex_dia, m3_hex_thick, m3_head_dia, m3_head_thick, slen, extension);
 }
 
 module screw_m8(slen, extension=0) {
-    m_screw(8.4/2, m8_hex_dia/2, 6, 16.5, slen, extension);
+    m_screw(8.4/2, m8_hex_dia, m8_hex_thick, m8_head_dia, m8_head_thick, slen, extension);
+}
+module screw_m8_with_washer(slen, extension=0) {
+    screw_m8(slen, extension);
+    color("green") translate([0, 0, slen-m8_washer_thickness+epsilon]) cylinder(r=m8_head_dia/2, h=m8_washer_thickness);
 }
 
 module pin(d=2 * pin_r) {
-    translate([0, 0, pin_tip_len-epsilon]) cylinder(r=d/2, h=pin_straight_len + 2 * epsilon);
+    translate([0, 0, pin_tip_len-epsilon]) cylinder(r=d/2, h=3 * pin_straight_len);
     cylinder(r1=0, r2=d/2, h=pin_tip_len);  // pin.
-    translate([0, 0, pin_tip_len + pin_straight_len - epsilon]) cylinder(r=3 * d, h=4);
+    // collar:
+    translate([0, 0, pin_tip_len + pin_straight_len - epsilon]) cylinder(r=pin_collar_r + epsilon, h=4);
 }
 
 module pin_holder(r=pin_r) {
@@ -113,7 +125,7 @@ module baseplate(dist=hinge_rotate_block_width + 2*m8_washer_thickness) {
 
 
 	// On the side with the screwhead, we want to have one washer
-	#translate([-(hinge_axis_len + 1 * m8_hex_thick + 1 * m8_washer_thickness)/2, 0, base_thick + hinge_center_z]) rotate([0, 90, 0]) screw_m8(hinge_axis_len, 10);
+	#translate([-(hinge_axis_len + m8_head_thick)/2, 0, base_thick + hinge_center_z]) rotate([0, 90, 0]) screw_m8_with_washer(hinge_axis_len, 12);
     }    
 }
 
@@ -130,7 +142,7 @@ module print_endpin_holder() {
 module xray() {
     difference() {
 	baseplate();
-	translate([0, 0, 18]) cube([50, 50, 10], center=true);
+	translate([0, 0, 22]) cube([50, 50, 20], center=true);
     }
 }
 
