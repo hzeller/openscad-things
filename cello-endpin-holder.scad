@@ -22,14 +22,14 @@ pin_collar_r=6+0.5;
 
 // cello pin #2
 /**/
-pin_r = 8.6/2;
-pin_straight_len = 12.5;
+pin_r = 8.6/2 + 0.2;  // add some fudge.
+pin_straight_len = 13;
 pin_tip_len = 8.5;
 pin_collar_r=7+0.5;
 /**/
 
-hinge_wall=2.5;      // min. wall around hinge.
-hinge_axis_r=4.1;    // Axis of the hinge axle.
+hinge_wall=2.6;      // min. wall around hinge.
+hinge_axis_r=8/2 + 0.15;    // Axis of the hinge axle.
 hinge_axis_len = 33; // screw
 hinge_axis_mount_hiding = 0.5;  // hiding screws with at least this amount overhang.
 
@@ -56,8 +56,8 @@ base_dia = hinge_axis_len + m8_head_thick + hinge_axis_mount_hiding + 11;
 
 // securing screw.
 screw_length = 5;
-screw_wall_thick = 0.5;
-screw_offset = 5;
+screw_wall_thick = 1.2;
+screw_offset = 6;
 
 module m_screw(radius, hex_dia, hex_thick, head_dia, head_thick, slen, extension) {
     cylinder(r=radius, h=slen + epsilon);
@@ -97,11 +97,18 @@ module pin_holder(r=pin_r) {
 	   pin_outer_radius = r + pin_wall_thick,
            pin_height = pin_straight_len + pin_tip_len) {
 	difference() {
-	    hull() {
+	    union() {
 		translate([-(block_d)/2, -pin_outer_radius, 0]) cube([block_d, 2 * pin_outer_radius, block_h]); // hinge block
-		translate([0, 0, block_h]) cylinder(h=pin_height, r=pin_outer_radius);  // main cylinde
-		translate([0, 0, block_h + pin_height - 2]) cylinder(h=2, r=pin_collar_r);
-		translate([0, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) cylinder(r=m3_hex_dia/2 + screw_wall_thick, h=screw_length + pin_r);
+		hull() {
+		    // The first two blocks outline the real hinge block, so that we get a smooth
+		    // transition to the top part with the hull, but still have square flat sides.
+		    translate([-(block_d)/2, -pin_outer_radius, block_h-1]) cube([block_d, 2 * pin_outer_radius, 1]);
+		    translate([(block_d)/2-epsilon, -0.9 * pin_outer_radius, 0]) cube([epsilon, 1.8 * pin_outer_radius, block_h]);
+
+		    translate([0, 0, block_h]) cylinder(h=pin_height, r=pin_outer_radius);  // main cylinde
+		    translate([0, 0, block_h + pin_height - 2]) cylinder(h=2, r=pin_collar_r);
+		    translate([0, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) cylinder(r=m3_head_dia/2 + screw_wall_thick, h=screw_length + pin_r);
+		}
 	    }
 	    translate([0, 0, block_h]) pin(d=2*r);  // make space for the pin
 	    #translate([pin_r, 0, block_h + pin_tip_len + screw_offset]) rotate([0, 90, 0]) screw_m3(screw_length, 5); // space for screw
@@ -149,4 +156,6 @@ module xray() {
     }
 }
 
-print_endpin_holder();
+//display_mount();
+//print_endpin_holder();
+pin_holder();
