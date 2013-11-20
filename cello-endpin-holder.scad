@@ -1,7 +1,5 @@
 $fn=96;
 epsilon=0.02;
-m4_hex_dia = 8.1;
-m4_hex_thick=3.2;
 
 m3_hex_dia = 6.3 + 1;
 m3_head_dia = m3_hex_dia;
@@ -72,10 +70,6 @@ module m_screw(radius, hex_dia, hex_thick, head_dia, head_thick, slen, extension
 	translate([0, 0, slen + head_thick - epsilon]) cylinder(r=head_dia/2, h=extension);
 	translate([0, 0, -extension]) cylinder(r=hex_dia/2, h=extension + epsilon, $fn=6);
     }
-}
-
-module screw_m4(slen, extension=0) {
-    m_screw(4.4/2, m4_hex_dia, 2, 7, slen, extension);
 }
 
 module screw_m3(slen, extension=0) {
