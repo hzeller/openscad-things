@@ -1,18 +1,26 @@
 // Little hood for the Logitec C920 webcam.
+// (c) h.zeller@acm.org Creative Commons license BY-SA
+//
+// Print with
+//   - initial layer 0.25 and layer-height 0.2
+//   - fill 0.4,
+//   - 2 layer shell horizontal and vertical
+//
 $fn=128;
-wall_width=1.6;
+wall_width=2.3;
+hood_wall_width=0.6;
 
 bracket_depth=5 + wall_width/2;
-bracket_width=45;
-bracket_height=29;
+bracket_width=48;
+bracket_height=29.5;
 bracket_angle=4.7;
 
 hood_height=25;
 hood_aspect=1920/1080;
-hood_proximal_radius=4;
-hood_distal_radius=bracket_height * 0.6;
+hood_proximal_radius=4.5;
+hood_distal_radius=bracket_height * 0.65;
 
-snap_fit_gap=0.75;         // The gap between fitting components.
+snap_fit_gap=0.15;         // The gap between fitting components. Determine with your printer.
 snap_width=wall_width/2;   // Wall width where things are snapped together.
 snap_thickness=wall_width - 0.25;
 
@@ -42,7 +50,7 @@ module camera() {
     d = 1.5 * hood_height;
     w = image_width_inclination * d / 2;
     h = image_height_inclination * d / 2;
-    image_plane  = -7;
+    image_plane  = -9;
     translate([0, 0, image_plane]) polyhedron(points = [ [0, 0, 0],
 	    [-w, -h, d], [w, -h, d], [w, h, d], [-w, h, d] ],
 	triangles = [ [ 0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1],
@@ -82,8 +90,8 @@ module bracket() {
 }
 
 // The solid shape of the hood.
-module outer_hood_volume() {
-    translate([0, 0, -wall_width - 0.1]) scale([hood_aspect, 1, 1]) cylinder(h=hood_height, r1=hood_proximal_radius, r2=hood_distal_radius);
+module hood_volume(radius_adjust=0) {
+    translate([0, 0, -wall_width - 0.1]) scale([hood_aspect, 1, 1]) cylinder(h=hood_height, r1=hood_proximal_radius + radius_adjust, r2=hood_distal_radius+radius_adjust);
 }
 
 // This is more or less a funnel. The curved_hood() below makes this looks a bit nicer.
@@ -91,10 +99,11 @@ module straight_hood() {
     difference() {
 	difference() {
 	    // This difference make it hollow.
-	    outer_hood_volume();
-	    translate([0, 0, wall_width]) outer_hood_volume();
+	    hood_volume(0);
+	    hood_volume(-hood_wall_width);
+	    translate([0, 0, 0.1]) hood_volume(-hood_wall_width); // clean top cut.
 	}
-	camera(); // We're a bit below. Cut it wherever the camera is.
+	camera(); // We're a bit below. Cut that flush wherever the camera is.
     }
 }
 
@@ -102,7 +111,7 @@ module straight_hood() {
 module curved_hood() {
     intersection() {
 	straight_hood();
-	// Make it more like a cape; cut the hoodwi
+	// Make it more like a cape; cut the hood with a cylinder.
 	translate([-bracket_width, bracket_height/2, -(cut_radius-hood_height+wall_width)]) rotate([0, 90, 0]) cylinder(h=2 * bracket_width, r=cut_radius);
     }
 }
@@ -136,7 +145,7 @@ module hood_baseplate(snap_adjust=0) {
 module mounted_hood() {
     difference() {
 	hood_baseplate();
-	outer_hood_volume();  // Punch a hole.
+	hood_volume();  // Punch a hole.
     }
     curved_hood();
 }
@@ -190,5 +199,5 @@ module complete_mount() {
 }
 
 //complete_mount();
-//mounting_animation();
-print();
+mounting_animation();
+//print();
