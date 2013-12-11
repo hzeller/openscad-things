@@ -162,6 +162,8 @@ module baseplate(dist=hinge_rotate_block_width + 2*m8_washer_thickness) {
 	// .. also the space above the axle towards te cello-player should
 	// generally be free.
 	translate([-dist/2, -base_dia, hinge_center_z + base_thick - hinge_axle_r]) cube([dist, base_dia, base_dia]);
+	// ... the other side has more space.
+	translate([-dist/2, 0, hinge_center_z + base_thick - hinge_axle_r + 3.2]) cube([dist, base_dia, base_dia]);
 
 
 	// On the side with the screwhead, we want to have one washer
@@ -169,9 +171,10 @@ module baseplate(dist=hinge_rotate_block_width + 2*m8_washer_thickness) {
     }    
 }
 
-module display_mount() {
+module display_mount(display_angle) {
     baseplate();
-    color("red") translate([0, 0, base_thick + hinge_center_z - hinge_rotate_block_height/2]) rotate([0, 0, 90]) pin_holder();
+    
+    color("red") translate([0, 0, base_thick + hinge_center_z]) rotate([0, display_angle, -90]) translate([0, 0, -hinge_rotate_block_height/2]) pin_holder();
 }
 
 module print_endpin_holder() {
@@ -186,7 +189,7 @@ module xray() {
     }
 }
 
-display_mount();
+display_mount(25);
 //xray();
 //print_endpin_holder();
 //pin_holder();
