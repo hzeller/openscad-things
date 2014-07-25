@@ -1,6 +1,7 @@
-Mostly experimental right now.
+Some random things with no claim of usefulness :)
 
    - dimension-bracket: simpler ruler for printer adjustment
    - webcam-hood: a hood for my Logitec C920 webcam.
    - spool-holder: necessity - an axis adaptor for spools.
    - stacked-spool-holder: stack of spool holders, mount on top of printer.
+   - cello-endpin-holder: If you a are a cello player, you might like this.
