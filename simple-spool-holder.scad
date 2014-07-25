@@ -9,11 +9,12 @@ spring_extra=3;    // How much diameter the spring adds
 diameters=[55 - spring_extra,
            32 - spring_extra];
 
-holder_height=14;
-transition=4;
+holder_height=14;      // height of each stack.
+transition=4;          // transitioning between two stacks
 
 bottom_width=diameters[0] + 20;
-wall_thickness=1.8;
+wall_thickness=1;
+foot_thickness=5;
 mount_hole=3;
 
 spring_width=8;
@@ -59,8 +60,7 @@ module holder_stack() {
     }
 }
 
-module print() {
-    translate([0, 0, wall_thickness - epsilon])
+module hollow_stack() {
     difference() {
 	holder_stack();
 	// Hollow out with a cone on the inside.
@@ -68,17 +68,21 @@ module print() {
 	         r2=diameters[len(diameters)-1]/2 - wall_thickness,
 		 h=(len(diameters)-1) * (holder_height + 5));
 
-	// The last element in the stack has one diameter.
+	// The last element in the stack has constant diameter.
 	translate([0, 0, (len(diameters)-1) * (holder_height + 5) - epsilon])
 	  cylinder(r=diameters[len(diameters)-1]/2 - wall_thickness,
 	           h = holder_height + 2 * epsilon);
-
     }
+}
 
+module print() {
     // Bottom plate with mounting hole.
     difference() {
-	color("red") cylinder(r=bottom_width/2, h=wall_thickness);
-	translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=wall_thickness + 2 * epsilon);
+        union() {
+           translate([0, 0, foot_thickness - epsilon]) hollow_stack();
+	   color("red") cylinder(r=bottom_width/2, h=foot_thickness);
+        }
+	translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=foot_thickness + 2 * epsilon);
     }    
 }
 
