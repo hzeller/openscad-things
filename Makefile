@@ -1,9 +1,7 @@
-THINGS=dimension-bracket.stl webcam-hood.stl spool-holder.stl \
-       stacked-spool-holder.stl cello-endpin-holder.stl
+THING_STL=stl/dimension-bracket.stl stl/webcam-hood.stl stl/spool-holder.stl \
+          stl/stacked-spool-holder.stl stl/cello-endpin-holder.stl
 
-all : $(THINGS)
-
-clef.scad : FClef.dxf
+all : $(THING_STL)
 
  %.eps: %.svg
 	inkscape -E $@ $<
@@ -13,3 +11,6 @@ clef.scad : FClef.dxf
 
 %.stl: %.scad
 	openscad -o $@ -d $@.deps $<
+
+clean:
+	rm -f $(THING_STL)
