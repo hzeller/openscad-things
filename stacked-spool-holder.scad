@@ -3,11 +3,14 @@ $fn=128;
 
 epsilon=0.1;
 
-spring_extra=3;    // How much diameter the spring adds
+spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
 
-// Diameters of each spool holder in the stack. You want the biggest first :)
+
+// Diameters of each spool holder in the stack. Enter all the different spool
+// sizes you have here.
+// For want the biggest first :)
 diameters=[55 - spring_extra,
-          32 - spring_extra];
+           32 - spring_extra];
 
 holder_height=14;      // height of each stack.
 transition=4;          // transitioning between two stacks
@@ -35,9 +38,11 @@ module holder(hole_diameter, holder_height, angle_offset) {
     difference() {
 	union() {
 	    cylinder(r=hole_diameter/2, h=holder_height);
-	    for (a = [0:mount_angle:360]) {
-		rotate([0, 0, a + angle_offset]) translate([hole_diameter/2 - holder_height + spring_extra/2, 0, holder_height/2])
-		spring(holder_height-0.2);
+	    if (spring_extra > 0) {
+		for (a = [0:mount_angle:360]) {
+		    rotate([0, 0, a + angle_offset]) translate([hole_diameter/2 - holder_height + spring_extra/2, 0, holder_height/2])
+		    spring(holder_height-0.2);
+		}
 	    }
 	}
 
