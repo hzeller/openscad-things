@@ -53,7 +53,7 @@ module camera() {
     image_plane  = -9;
     translate([0, 0, image_plane]) polyhedron(points = [ [0, 0, 0],
 	    [-w, -h, d], [w, -h, d], [w, h, d], [-w, h, d] ],
-	triangles = [ [ 0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1],
+	faces = [ [ 0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1],
 	[1, 2, 3], [1, 3, 4] ]);
 }
 
@@ -199,5 +199,5 @@ module complete_mount() {
 }
 
 //complete_mount();
-mounting_animation();
-//print();
+//mounting_animation();
+print();

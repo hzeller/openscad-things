@@ -1,6 +1,6 @@
 THING_STL=stl/dimension-bracket.stl stl/webcam-hood.stl stl/spool-holder.stl \
           stl/stacked-spool-holder.stl stl/cello-endpin-holder.stl \
-	  stl/scope-phone-adapter.stl
+	  stl/scope-phone-adapter.stl stl/snap-joint-test.stl
 
 all : $(THING_STL)
 
