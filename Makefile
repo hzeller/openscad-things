@@ -1,5 +1,6 @@
 THING_STL=stl/dimension-bracket.stl stl/webcam-hood.stl stl/spool-holder.stl \
-          stl/stacked-spool-holder.stl stl/cello-endpin-holder.stl
+          stl/stacked-spool-holder.stl stl/cello-endpin-holder.stl \
+	  stl/scope-phone-adapter.stl
 
 all : $(THING_STL)
 
@@ -9,7 +10,7 @@ all : $(THING_STL)
  %.dxf: %.eps
 	pstoedit -psarg "-r300x300" -dt -f dxf:-polyaslines $< $@
 
-%.stl: %.scad
+stl/%.stl: %.scad
 	openscad -o $@ -d $@.deps $<
 
 clean:
