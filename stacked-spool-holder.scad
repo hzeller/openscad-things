@@ -4,7 +4,7 @@ $fn=128;
 epsilon=0.1;
 clearance=0.2;
 
-spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
+spring_extra=3;    // How much diameter the spring provides; 0 for no spring.
 
 
 // Diameters of each spool holder in the stack. Enter all the different spool
@@ -13,19 +13,19 @@ spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
 diameters=[55 - spring_extra,
            32 - spring_extra];
 
-holder_height=14;      // height of each stack.
-transition=4;          // transitioning between two stacks
+holder_height=12;      // height of each stack.
+transition=1;          // transitioning between two stacks
 
 bottom_width=diameters[0] + 20;
 wall_thickness=1;
 foot_thickness=5;
 mount_hole=3;
 
-mount_peg_bottom=2 * mount_hole;
-mount_peg_top=3 * mount_hole;
+mount_peg_bottom=3 * mount_hole;
+mount_peg_top=4 * mount_hole;
 
 spring_width=8;
-spring_springiness_thick=0.5;
+spring_springiness_thick=0.8;
 mount_angle=120;     // Spring every n of these.
 
 module spring(spring_r) {
@@ -53,6 +53,8 @@ module holder(hole_diameter, holder_height, angle_offset) {
 	// Get rid spring stuff where we don't need it.
 	rotate([180,0,0]) cylinder(r=hole_diameter, h=3*holder_height);
 	translate([0,0,holder_height]) cylinder(r=hole_diameter, h=3*holder_height);
+	// And remove the inner volume.
+	translate([0,0,-epsilon]) cylinder(r=hole_diameter/2 - wall_thickness, h=holder_height + 2*epsilon);
     }
 }
 
@@ -61,7 +63,10 @@ module holder_stack() {
 	color("blue") translate([0, 0, (holder_height + transition) * i])
 	    holder(diameters[i], holder_height, (i % 2) * 60);
 	if (i > 0) {
-	    translate([0,0, holder_height + (i-1) * (holder_height + transition)]) cylinder(r1=diameters[i-1]/2, r2=diameters[i]/2, h=transition);
+	    difference() {
+		translate([0,0, (i-1) * (holder_height + transition)]) cylinder(r1=diameters[i-1]/2, r2=diameters[i]/2, h=holder_height + transition);
+		translate([0,0, (i-1) * (holder_height + transition) - epsilon]) cylinder(r1=diameters[i-1]/2 - wall_thickness, r2=diameters[i]/2 - wall_thickness, h=holder_height + transition + 2 * epsilon);
+	    }
 	}
     }
 }
@@ -105,11 +110,9 @@ module bottom_plate() {
 
 module print() {
     color("red") bottom_plate();
-    translate([0, 0, foot_thickness - epsilon]) hollow_stack();
-    translate([bottom_width/2 + mount_peg_top,0,foot_thickness + clearance]) rotate([0,180,0]) drilled_mount_peg();
+    translate([0, 0, foot_thickness - epsilon]) holder_stack();
+    translate([bottom_width/2 + mount_peg_top/2 + 5,0,foot_thickness + clearance]) rotate([0,180,0]) drilled_mount_peg();
 }
 
-//holder(30, 14, 0);
 print();
-
 
