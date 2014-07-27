@@ -8,8 +8,7 @@ spring_extra=3;    // How much diameter the spring provides; 0 for no spring.
 
 
 // Diameters of each spool holder in the stack. Enter all the different spool
-// sizes you have here.
-// For want the biggest first :)
+// sizes you have here. You want the biggest first :)
 diameters=[55 - spring_extra,
            32 - spring_extra];
 
@@ -71,21 +70,6 @@ module holder_stack() {
     }
 }
 
-module hollow_stack() {
-    difference() {
-	holder_stack();
-	// Hollow out with a cone on the inside.
-	cylinder(r1=diameters[0] / 2 - wall_thickness,
-	         r2=diameters[len(diameters)-1]/2 - wall_thickness,
-		 h=(len(diameters)-1) * (holder_height + 5));
-
-	// The last element in the stack has constant diameter.
-	translate([0, 0, (len(diameters)-1) * (holder_height + 5) - epsilon])
-	  cylinder(r=diameters[len(diameters)-1]/2 - wall_thickness,
-	           h = holder_height + 2 * epsilon);
-    }
-}
-
 module mount_peg(with_clearance=0) {
     cylinder(r=mount_peg_bottom/2 + with_clearance, h=2*foot_thickness/3 + epsilon);
     translate([0,0,2 * foot_thickness/3]) cylinder(r=mount_peg_top/2 + with_clearance, h=1*foot_thickness/3 + clearance);
@@ -115,4 +99,3 @@ module print() {
 }
 
 print();
-
