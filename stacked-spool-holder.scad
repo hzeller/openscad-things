@@ -1,10 +1,22 @@
-// Stack of spool holders.
-$fn=128;
+// Stacked spool holders to hold filament spools horizontally. Allows
+// for various sizes.
+//
+// Provides a bushing that can be firmly screwed down and allows to rotate
+// around.
+//
+// To hold the spools, it can have as well a little 'spring' holding it, but
+// real live shows that this is not really needed (if you want it, set
+// the "spring_extra" variable.
+//
+// (c) h.zeller@acm.org Creative Commons license BY-SA
+
+$fn=64;
 
 epsilon=0.1;
-clearance=0.2;
+clearance=0.6;     // Spacing around the screwed down part to allow free rotation
 
-spring_extra=3;    // How much diameter the spring provides; 0 for no spring.
+// sprint is overrated :)
+spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
 
 
 // Diameters of each spool holder in the stack. Enter all the different spool
@@ -18,10 +30,10 @@ transition=1;          // transitioning between two stacks
 bottom_width=diameters[0] + 20;
 wall_thickness=1;
 foot_thickness=5;
-mount_hole=3;
+mount_hole=3 + 0.2;  // M3 + fudge
 
 mount_peg_bottom=3 * mount_hole;
-mount_peg_top=4 * mount_hole;
+mount_peg_top=5 * mount_hole;
 
 spring_width=8;
 spring_springiness_thick=0.8;
@@ -78,7 +90,7 @@ module mount_peg(with_clearance=0) {
 module drilled_mount_peg() {
     difference() {
 	mount_peg();
-	#translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=foot_thickness + clearance + 2*epsilon);
+	translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=foot_thickness + clearance + 2*epsilon);
     }
 }
 
@@ -98,4 +110,16 @@ module print() {
     translate([bottom_width/2 + mount_peg_top/2 + 5,0,foot_thickness + clearance]) rotate([0,180,0]) drilled_mount_peg();
 }
 
+module xray() {
+    difference() {
+	union() {
+	    color("red") bottom_plate();
+	    translate([0, 0, foot_thickness - epsilon]) holder_stack();
+	    drilled_mount_peg();
+	}
+	translate([0,0,-epsilon]) cube([60, 60, 100]);
+    }
+}
+
+//xray();
 print();
