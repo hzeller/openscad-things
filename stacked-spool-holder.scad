@@ -2,6 +2,7 @@
 $fn=128;
 
 epsilon=0.1;
+clearance=0.2;
 
 spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
 
@@ -19,6 +20,9 @@ bottom_width=diameters[0] + 20;
 wall_thickness=1;
 foot_thickness=5;
 mount_hole=3;
+
+mount_peg_bottom=2 * mount_hole;
+mount_peg_top=3 * mount_hole;
 
 spring_width=8;
 spring_springiness_thick=0.5;
@@ -45,9 +49,6 @@ module holder(hole_diameter, holder_height, angle_offset) {
 		}
 	    }
 	}
-
-	// bore hole.
-	//translate([0,0,-epsilon]) cylinder(r=hole_diameter/2 - wall_thickness, h=holder_height + 2 * epsilon);
 
 	// Get rid spring stuff where we don't need it.
 	rotate([180,0,0]) cylinder(r=hole_diameter, h=3*holder_height);
@@ -80,15 +81,32 @@ module hollow_stack() {
     }
 }
 
-module print() {
-    // Bottom plate with mounting hole.
+module mount_peg(with_clearance=0) {
+    cylinder(r=mount_peg_bottom/2 + with_clearance, h=2*foot_thickness/3 + epsilon);
+    translate([0,0,2 * foot_thickness/3]) cylinder(r=mount_peg_top/2 + with_clearance, h=1*foot_thickness/3 + clearance);
+}
+
+module drilled_mount_peg() {
     difference() {
-        union() {
-           translate([0, 0, foot_thickness - epsilon]) hollow_stack();
-	   color("red") cylinder(r=bottom_width/2, h=foot_thickness);
-        }
-	translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=foot_thickness + 2 * epsilon);
-    }    
+	mount_peg();
+	#translate([0,0,-epsilon]) cylinder(r=mount_hole/2, h=foot_thickness + clearance + 2*epsilon);
+    }
+}
+
+// Bottom plate with mounting hole.
+module bottom_plate() {
+    // plate.
+    difference() {
+	cylinder(r=bottom_width/2, h=foot_thickness);
+	translate([0,0,-clearance]) mount_peg(clearance);
+	translate([0,0,+epsilon]) mount_peg(clearance);
+    }
+}
+
+module print() {
+    color("red") bottom_plate();
+    translate([0, 0, foot_thickness - epsilon]) hollow_stack();
+    translate([bottom_width/2 + mount_peg_top,0,foot_thickness + clearance]) rotate([0,180,0]) drilled_mount_peg();
 }
 
 //holder(30, 14, 0);
