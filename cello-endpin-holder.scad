@@ -1,7 +1,7 @@
 $fn=96;
 epsilon=0.02;
 
-hinge_axle_use_dowel=true;    // Use dowel instead of screw ?
+hinge_axle_use_dowel=true;       // Use dowel instead of screw ?
 hinge_axle_dowel_diameter = 10;  // used when dowel; otherwise screw m8 is used.
 pin_secure_screw=true;
 base_plate_addon_dia = 5;
@@ -179,7 +179,7 @@ module display_mount(display_angle) {
 
 module print_endpin_holder() {
     baseplate();
-    translate([0, base_dia/2 + 10, 0]) rotate([0, 0, -90]) pin_holder(r=pin_r);
+    translate([0, -base_dia/2 - 10, 0]) rotate([0, 0, -90]) pin_holder(r=pin_r);
 }
 
 module xray() {
@@ -189,7 +189,21 @@ module xray() {
     }
 }
 
-display_mount(25);
+
+/// --------
+/// uncomment one of these. For printing, print_endpin_holder() is
+/// what you want.
+/// --------
+
+// -- show how the dowel is in place
 //xray();
-//print_endpin_holder();
+
+//-- separate baseplate and pin
+//baseplate();
 //pin_holder();
+
+// -- print the hole thing.
+print_endpin_holder();
+
+// In openSCAD: show how it looks mounted.
+//display_mount(25);
