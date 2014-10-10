@@ -71,7 +71,7 @@ module pipe() {
 }
 
 module magnet(extra=0) {
-    color("silver") cylinder(r=magnet_diameter/2+extra,h=magnet_length);
+    color("silver") translate([0,0,-extra]) cylinder(r=magnet_diameter/2+extra,h=magnet_length+2*extra);
 }
 
 module magnet_holder(){ 
@@ -90,6 +90,8 @@ module coil_holder() {
 	union() {
 	    // transition.
 	    cylinder(r1=block_size/2,r2=coil_diameter/2,h=coil_transition);
+
+	    // winding cylinder
 	    cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance + coil_wall,
 		     h=coil_length+coil_transition);
 	}
@@ -97,6 +99,16 @@ module coil_holder() {
 	   cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance,
 	    h=coil_transition+coil_length+2*epsilon);
     }    
+}
+
+module coil() {
+    translate([0,0,coil_transition]) {
+	difference() {
+	    color("DarkGoldenrod") cylinder(r=coil_diameter/2, h=coil_length);
+	    cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance + coil_wall,
+		h=coil_length);
+	}
+    }
 }
 
 module o_rings() {    
@@ -160,17 +172,20 @@ module assembly(display_shifter=0) {
     translate([0,0,display_shifter]) {
 	inner_shifter();
 	o_rings();
+	
 	translate([0,0,magnet_start]) magnet();
     }
+    
     valve_block();
+    translate([0,0,block_high-end_len]) coil();
 }
 
 module xray() {
     difference() {
 	assembly(display_shifter=($t < 0.5) ? (2 * $t * travel) : (2 * (1-$t) * travel));
-	translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,3*block_high+coil_length+2*epsilon]);
+	rotate([0,0,90]) translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,3*block_high+coil_length+2*epsilon]);
     }
 }
 
-//xray();
-inner_shifter();
+xray();
+//inner_shifter();
