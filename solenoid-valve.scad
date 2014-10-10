@@ -16,11 +16,15 @@
 */
 
 $fn=48;
+clearance=0.3;
+epsilon=0.02;
+
 wall_thick_under_o_ring=0.5;
 wall_thick_to_channel=1;
+end_len=1.2;
 
 block_thickness=2;
-epsilon=0.02;
+
 slit=1;
 pipe_dia=6;
 o_ring_thick=2;            // diameter of rubber
@@ -39,17 +43,30 @@ travel=hub + dead_zone;
 // o-ring.
 hollow_dia=2*(o_ring_radius - o_ring_thick/2) - 2*wall_thick_under_o_ring;
 
-end_len=2;
 block_size=2*(pipe_with_o_ring_radius + wall_thick_to_channel + channel_thick) + block_thickness;
-pipe_high=end_len + 4*hub + 2*dead_zone + end_len;
+pipe_high=end_len + hub + travel + 2*dead_zone + end_len;
 block_high = pipe_high + travel;
 breakout_size=20;  // breaking out of block.
 
-inlet_pos=o_ring_thick/2 + travel + 2*hub+dead_zone;
-exhaust_pos=o_ring_thick/2 + travel;
-outlet_pos=o_ring_thick/2;
+inlet_pos=o_ring_thick/2;
+outlet_pos=o_ring_thick/2 + travel;
 
-	
+coil_length=15;
+coil_transition=2;
+coil_diameter=12;
+coil_wall=0.5;
+
+magnet_diameter=4;
+magnet_length=12.6;
+magnet_hull=0.4;  // should be a single shell
+
+// We want the magnet transition so that the magnet is centered in the
+// coil.
+magnet_transition=5;   // Transition between
+
+magnet_holder_start=pipe_high - end_len;
+magnet_start=magnet_holder_start + magnet_transition;
+
 module o_ring() {
     color("gray") rotate_extrude(convexity=3) translate([o_ring_radius, 0, 0]) circle(r=o_ring_thick/2);
 }
@@ -61,12 +78,39 @@ module pipe() {
     }
 }
 
-module o_rings() {    
-    o_ring();                         // start of outlet
-    translate([0,0,hub]) o_ring();    // end of outlet
+module magnet(extra=0) {
+    color("silver") cylinder(r=magnet_diameter/2+extra,h=magnet_length);
+}
 
-    translate([0,0,hub+dead_zone+hub]) o_ring();  // start inlet
-    translate([0,0,(hub+dead_zone+hub) + (2*hub+dead_zone)]) o_ring(); // ..end
+module magnet_holder(){ 
+    // The part holding the magnet.
+    magnet_coverage = magnet_length/2;   // no reason to fully cover it.
+    difference() {
+	cylinder(r=magnet_diameter/2+magnet_hull,
+	         h=magnet_coverage + magnet_transition);
+	translate([0,0,magnet_transition]) magnet(extra=clearance);
+    }
+}
+
+module coil_holder() {
+    // Transition to coil and coil holder
+    difference() {
+	union() {
+	    // transition.
+	    cylinder(r1=block_size/2,r2=coil_diameter/2,h=coil_transition);
+	    cylinder(r=magnet_diameter/2 + magnet_hull + clearance + coil_wall,
+		     h=coil_length+coil_transition);
+	}
+	translate([0,0,-epsilon])
+	   cylinder(r=magnet_diameter/2 + magnet_hull + clearance,
+	    h=coil_transition+coil_length+2*epsilon);
+    }    
+}
+
+module o_rings() {    
+    o_ring();                         // start of inlet
+    translate([0,0,hub]) o_ring();    // between inlet+outlet
+    translate([0,0,hub+travel]) o_ring();  // end.
 }
 
 module inner_shifter() {
@@ -76,6 +120,7 @@ module inner_shifter() {
 	translate([0,0,inlet_pos]) channel();
 	translate([0,0,outlet_pos]) channel();	
     }
+    translate([0,0,magnet_holder_start]) magnet_holder();
 }
 
 module valve_block() {
@@ -90,9 +135,11 @@ module valve_block() {
 	    translate([0,0,-epsilon]) cylinder(r=pipe_with_o_ring_radius,h=block_high + 2*epsilon);
 	}
 	translate([0,0,inlet_pos]) channel();
-	translate([0,0,exhaust_pos]) channel();	
 	translate([0,0,outlet_pos]) channel();
     }
+
+    // Add solenoid on top
+    translate([0,0,block_high-end_len]) coil_holder();
 }
 
 module channel2d() {
@@ -121,6 +168,7 @@ module assembly(display_shifter=0) {
     translate([0,0,display_shifter]) {
 	inner_shifter();
 	o_rings();
+	translate([0,0,magnet_start]) magnet();
     }
     valve_block();
 }
@@ -128,7 +176,7 @@ module assembly(display_shifter=0) {
 module xray() {
     difference() {
 	assembly(display_shifter=($t < 0.5) ? (2 * $t * travel) : (2 * (1-$t) * travel));
-	translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,block_high+2*epsilon]);
+	translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,3*block_high+2*epsilon]);
     }
 }
 
