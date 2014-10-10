@@ -1,47 +1,37 @@
-/*
- 2 inlets: vacuum, pressure
- outlets: needle.
- 
- 0) vacuum -> exhaust; pressure -> exhaust
- 1) vaccum -> needle; pressure -> exhaust
- 2) vaccum -> exhaust; pressure -> needle;
-*/
-
-/*
-  o d e     i         i=inlet, e=exhaust, d=dead, o=outlet
-  - - -     -
-     |-|===|-----|   (pos 1)
-   |-|===|-----|     (pos 1.5 moving)
- |-|===|-----|       (pos 2)
-*/
-
-$fn=48;
+/* Solenoid valve.
+ * Input switched to output (down) or exhaust (up)
+ */
+$fn=96;
 clearance=0.3;
 epsilon=0.02;
 
 wall_thick_under_o_ring=0.5;
 wall_thick_to_channel=1;
-end_len=1.2;
 
 block_thickness=2;
 
 slit=1;
-pipe_dia=6;
+slit_rim=0.2;              // rim around slit to next o-ring.
 o_ring_thick=2;            // diameter of rubber
-o_ring_radius=pipe_dia/2;  // To the middle of the rubber 'torus'
+o_ring_radius=7/2;         // inner radius of the o-ring.
+
+pipe_dia=2*o_ring_radius + o_ring_thick;
+
 pipe_with_o_ring_radius=(pipe_dia + o_ring_thick)/2;
+
+end_len=o_ring_thick/2 + 0.5;
 
 channel_thick=1.5;
 
 // The area that is active is two half o-rings + slit.
-hub=o_ring_thick + slit;
+hub=o_ring_thick + slit + 2*slit_rim;
 dead_zone=0*hub;            // dead zone is full hub or less if overlap is allowed
 
 travel=hub + dead_zone;
 
 // The hollow pipe needs to be thick enough to allow to be indented by the
 // o-ring.
-hollow_dia=2*(o_ring_radius - o_ring_thick/2) - 2*wall_thick_under_o_ring;
+hollow_dia=pipe_dia - o_ring_thick - 2*wall_thick_under_o_ring;
 
 block_size=2*(pipe_with_o_ring_radius + wall_thick_to_channel + channel_thick) + block_thickness;
 pipe_high=end_len + hub + travel + 2*dead_zone + end_len;
@@ -51,30 +41,32 @@ breakout_size=20;  // breaking out of block.
 inlet_pos=o_ring_thick/2;
 outlet_pos=o_ring_thick/2 + travel;
 
-coil_length=15;
-coil_transition=2;
-coil_diameter=12;
-coil_wall=0.5;
-
 magnet_diameter=4;
 magnet_length=12.6;
 magnet_hull=0.4;  // should be a single shell
 
+coil_length=magnet_length + travel;  // Good value. Can be shorter if needed.
+coil_transition=2;
+coil_diameter=12;
+coil_wall=0.5;
+
 // We want the magnet transition so that the magnet is centered in the
-// coil.
-magnet_transition=5;   // Transition between
+// coil at half travel.
+magnet_transition=(coil_length - magnet_length)/2 + coil_transition + travel/2;
 
 magnet_holder_start=pipe_high - end_len;
 magnet_start=magnet_holder_start + magnet_transition;
 
 module o_ring() {
-    color("gray") rotate_extrude(convexity=3) translate([o_ring_radius, 0, 0]) circle(r=o_ring_thick/2);
+    color("gray") rotate_extrude(convexity=10) translate([o_ring_radius+o_ring_thick/2, 0, 0]) circle(r=o_ring_thick/2);
 }
 
 module pipe() {
     difference() {
 	cylinder(r=pipe_dia/2, h=pipe_high);
-	translate([0,0,end_len]) cylinder(r=hollow_dia/2, pipe_high - 2*end_len);
+	translate([0,0,end_len]) cylinder(r=hollow_dia/2, pipe_high - 2*end_len - o_ring_thick/2);
+	// Cone on top to that things are easily printable.
+	translate([0,0,pipe_high-end_len-o_ring_thick/2]) cylinder(r1=hollow_dia/2, r2=0, h=o_ring_thick/2);
     }
 }
 
@@ -86,7 +78,7 @@ module magnet_holder(){
     // The part holding the magnet.
     magnet_coverage = magnet_length/2;   // no reason to fully cover it.
     difference() {
-	cylinder(r=magnet_diameter/2+magnet_hull,
+	cylinder(r=magnet_diameter/2 + clearance + magnet_hull,
 	         h=magnet_coverage + magnet_transition);
 	translate([0,0,magnet_transition]) magnet(extra=clearance);
     }
@@ -98,11 +90,11 @@ module coil_holder() {
 	union() {
 	    // transition.
 	    cylinder(r1=block_size/2,r2=coil_diameter/2,h=coil_transition);
-	    cylinder(r=magnet_diameter/2 + magnet_hull + clearance + coil_wall,
+	    cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance + coil_wall,
 		     h=coil_length+coil_transition);
 	}
 	translate([0,0,-epsilon])
-	   cylinder(r=magnet_diameter/2 + magnet_hull + clearance,
+	   cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance,
 	    h=coil_transition+coil_length+2*epsilon);
     }    
 }
@@ -127,7 +119,7 @@ module valve_block() {
     difference() {
 	translate([0,0,-end_len]) difference() {
 	    hull() {
-		cylinder(r=block_size/2, h=block_high);
+		cylinder(r=block_size/2, h=block_high, $fn=128);
 		translate([block_size/2-2, -block_size/2, 0]) cube([2,block_size,block_high]);
 	    }
 	    
@@ -160,7 +152,7 @@ module channel2d() {
 module channel() {
     // TODO: differentiate slit from padding around slit. Right now only
     // epsilon.
-    translate([0,0,epsilon]) linear_extrude(height=slit-2*epsilon) channel2d();
+    translate([0,0,slit_rim]) linear_extrude(height=slit) channel2d();
 }
 
 
@@ -176,8 +168,9 @@ module assembly(display_shifter=0) {
 module xray() {
     difference() {
 	assembly(display_shifter=($t < 0.5) ? (2 * $t * travel) : (2 * (1-$t) * travel));
-	translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,3*block_high+2*epsilon]);
+	translate([0,0,-end_len-epsilon]) cube([breakout_size,breakout_size,3*block_high+coil_length+2*epsilon]);
     }
 }
 
-xray();
+//xray();
+inner_shifter();
