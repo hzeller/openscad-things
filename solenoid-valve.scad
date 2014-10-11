@@ -2,7 +2,8 @@
 * Solenoid valve.
 * Input switched to output (down) or exhaust (up)
 */
-$fn=96;
+$fn=48;
+
 clearance=0.3;
 epsilon=0.02;
 
@@ -28,7 +29,7 @@ channel_thick=1.5;
 inner_channel_height=2*slit;
 muff_radius=1.5;
 hose_connect_dia=5;
-hose_connect_len=5;
+hose_connect_len=6;
 
 // The area that is active is two half o-rings + slit.
 hub=o_ring_thick + slit + 2*slit_rim;
@@ -52,8 +53,8 @@ magnet_length=12.6;
 magnet_hull=0.4;  // should be a single shell
 
 coil_length=magnet_length + travel;  // Good value. Can be shorter if needed.
-coil_transition=2;
-coil_diameter=12;
+coil_transition=3;
+coil_diameter=13;
 coil_wall=0.5;
 
 // We want the magnet transition so that the magnet is centered in the
@@ -82,11 +83,14 @@ module magnet_holder(){
 }
 
 module coil_holder() {
+    // Whatever comes first: 45degree angle for transition (same high as wide),
+    // or limiting block.
+    transition_lower_radius_ = min(coil_diameter/2+coil_transition, block_size/2);
     // Transition to coil and coil holder
     difference() {
         union() {
             // transition.
-            cylinder(r1=coil_diameter/2+coil_transition,r2=coil_diameter/2,h=coil_transition);
+            cylinder(r1=transition_lower_radius_,r2=coil_diameter/2,h=coil_transition);
 
             // winding cylinder
             cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance + coil_wall,
@@ -208,6 +212,6 @@ module xray() {
     }
 }
 
-//xray();
-translate([20,0,0]) inner_shifter();
-valve_block();
+xray();
+//translate([20,0,0]) inner_shifter();
+//valve_block();
