@@ -73,7 +73,7 @@ module magnet(extra=0) {
 
 module magnet_holder(){ 
     // The part holding the magnet.
-    magnet_coverage = magnet_length/2;   // no reason to fully cover it.
+    magnet_coverage = magnet_length/4;   // little tubular; reason to fully cover it.
     difference() {
         cylinder(r=magnet_diameter/2 + clearance + magnet_hull,
             h=magnet_coverage + magnet_transition);
@@ -208,6 +208,6 @@ module xray() {
     }
 }
 
-xray();
-//translate([20,0,0]) inner_shifter();
-//valve_block();
+//xray();
+translate([20,0,0]) inner_shifter();
+valve_block();

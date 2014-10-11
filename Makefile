@@ -18,6 +18,7 @@ stl/cello-endpin-holder.stl:
 stl/scope-phone-adapter.stl:
 stl/snap-joint-test.stl:
 stl/peristaltic-pump.stl:
+stl/solenoid-valve.stl:
 
  %.eps: %.svg
 	inkscape -E $@ $<
