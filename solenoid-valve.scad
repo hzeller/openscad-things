@@ -2,7 +2,7 @@
 * Solenoid valve.
 * Input switched to output (down) or exhaust (up)
 */
-$fn=48;
+$fn=96;
 clearance=0.3;
 epsilon=0.02;
 
@@ -12,10 +12,11 @@ wall_thick_to_muff=0.5;
 
 block_thickness=2;
 
-slit=1;
-slit_rim=0.2;              // rim around slit to next o-ring.
 o_ring_thick=2;            // diameter of rubber
 o_ring_radius=7/2;         // inner radius of the o-ring.
+
+slit=o_ring_thick/2;
+slit_rim=0.2;              // rim around slit to next o-ring.
 
 pipe_dia=2*o_ring_radius + o_ring_thick;
 
@@ -88,7 +89,7 @@ module coil_holder() {
 
             // winding cylinder
             cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance + coil_wall,
-                h=coil_length+coil_transition);
+                     h=coil_length+coil_transition);
         }
         translate([0,0,-epsilon])
         cylinder(r=magnet_diameter/2 + magnet_hull + 2*clearance,
@@ -132,8 +133,10 @@ module channel2d() {
     square([channel_thick, 2 * (inner_circle_ + epsilon)], center=true);
     square([2 * (inner_circle_ + epsilon), channel_thick], center=true);
 
-    // Channel out towards the muffs.
-    translate([0,-channel_thick/2,0]) square([outer_circle_ + muff_radius + wall_thick_to_muff, channel_thick]);
+    // Channel out towards the muffs. Make towards muff size, but don't overdo
+    // it, because it creates an overhang.
+    muff_channel_width_ = max(1.5*muff_radius, channel_thick);
+    translate([inner_circle_,-muff_channel_width_/2,0]) square([channel_thick + muff_radius + wall_thick_to_muff, muff_channel_width_]);
 
 }
 
@@ -148,11 +151,13 @@ module channel(muff_len, extra_wide=0) {
 }
 
 module channels(extra_wide=0,extra_high=0) {
-    translate([0,0,inlet_pos]) rotate([0,0,45]) {
+    // inlet
+    translate([0,0,inlet_pos]) rotate([0,0,-45]) {
         channel(muff_len=block_high-inlet_pos + extra_high,
                 extra_wide=extra_wide);
     }
-    translate([0,0,outlet_pos]) rotate([0,0,-45]) {
+    // outlet
+    translate([0,0,outlet_pos]) rotate([0,0,45]) {
         channel(muff_len=block_high-outlet_pos + extra_high,
                 extra_wide=extra_wide);
     }
@@ -160,27 +165,22 @@ module channels(extra_wide=0,extra_high=0) {
 
 module valve_block() {    
     difference() {
-        // Block.
+        // Block. We move the hole thing
         translate([0,0,-end_len]) {
-            difference() {
-                union() {
-                    hull() {
-                        cylinder(r=block_size/2, h=block_high, $fn=128);
-                        translate([block_size/2-2, -block_size/2, 0]) cube([2,block_size,block_high]);
-                    }
-                    // To get the hose connectors.
-                    channels(extra_wide=hose_connect_dia/2-muff_radius,extra_high=hose_connect_len);
-                }
-                // Center
-                translate([0,0,-epsilon]) cylinder(r=pipe_with_o_ring_radius,h=block_high + 2*epsilon);
+            hull() {
+                cylinder(r=block_size/2, h=block_high, $fn=128);
+                translate([block_size/2-2, -block_size/2, 0]) cube([2,block_size,block_high]);
             }
+            // To get the hose connectors.
+            translate([0,0,end_len]) channels(extra_wide=hose_connect_dia/2-muff_radius,extra_high=hose_connect_len);
+            // Add solenoid on top
+            translate([0,0,block_high]) coil_holder();
         }
-
+        
         channels(extra_high=hose_connect_len+epsilon);  // hollow the channels
+        translate([0,0,-end_len-epsilon]) cylinder(r=pipe_with_o_ring_radius,h=block_high + 2*epsilon);
+        translate([0,0,-end_len+block_high]) cylinder(r1=pipe_with_o_ring_radius,r2=magnet_diameter/2,h=coil_transition);
     }
-
-    // Add solenoid on top
-    translate([0,0,block_high-end_len]) coil_holder();    
 }
 
 module assembly(display_shifter=0) {
@@ -191,13 +191,14 @@ module assembly(display_shifter=0) {
     }
     
     valve_block();
-    translate([0,0,block_high-end_len]) coil();
+    //translate([0,0,block_high-end_len]) coil();
 }
 
 module xray() {
     difference() {
         assembly(display_shifter=($t < 0.5) ? (2 * $t * travel) : (2 * (1-$t) * travel));
-        rotate([0,0,90]) translate([0,0,-end_len-epsilon]) cube([40,40,3*block_high+coil_length+2*epsilon]);
+        rotate([0,0,45]) translate([0,0,-end_len-epsilon]) cube([40,40,3*block_high+coil_length+2*epsilon]);
+        rotate([0,0,225]) translate([0,0,-end_len-epsilon]) cube([40,40,3*block_high+coil_length+2*epsilon]);        
     }
 }
 
