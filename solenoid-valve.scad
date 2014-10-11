@@ -25,6 +25,7 @@ pipe_with_o_ring_radius=(pipe_dia + o_ring_thick)/2;
 end_len=o_ring_thick/2 + 0.5;
 
 channel_thick=1.5;
+inner_channel_height=2*slit;
 muff_radius=1.5;
 hose_connect_dia=5;
 hose_connect_len=5;
@@ -120,7 +121,15 @@ module inner_shifter() {
     translate([0,0,magnet_holder_start]) magnet_holder();
 }
 
-module channel2d() {
+// The slits opening towards the inside
+module channel_slits() {
+    inner_circle_ = pipe_with_o_ring_radius + wall_thick_to_channel;
+    for (angle = [0:360/8:360]) {
+        rotate(angle) translate([-channel_thick/2,epsilon]) square([channel_thick, inner_circle_]);
+    }
+}
+
+module channel_inside() {
     // Outer ring
     inner_circle_ = pipe_with_o_ring_radius + wall_thick_to_channel;
     outer_circle_ = inner_circle_ + channel_thick;
@@ -129,21 +138,18 @@ module channel2d() {
         circle(r=inner_circle_);
     }
 
-    // Inner cross
-    square([channel_thick, 2 * (inner_circle_ + epsilon)], center=true);
-    square([2 * (inner_circle_ + epsilon), channel_thick], center=true);
-
     // Channel out towards the muffs. Make towards muff size, but don't overdo
     // it, because it creates an overhang.
     muff_channel_width_ = max(1.5*muff_radius, channel_thick);
     translate([inner_circle_,-muff_channel_width_/2,0]) square([channel_thick + muff_radius + wall_thick_to_muff, muff_channel_width_]);
-
 }
 
 module channel(muff_len, extra_wide=0) {
-    // TODO: differentiate slit from padding around slit. Right now only
-    // epsilon.
-    translate([0,0,slit_rim]) linear_extrude(height=slit) channel2d();
+    // The openings towards the piston need to be slit-like for small travel.
+    translate([0,0,slit_rim]) linear_extrude(height=slit) channel_slits();
+
+    // The inner channels are a bit higher to reduce resistance.
+    translate([0,0,slit_rim]) linear_extrude(height=inner_channel_height) channel_inside();
     out_ = pipe_with_o_ring_radius + wall_thick_to_channel + channel_thick + muff_radius + wall_thick_to_muff;
 
     // Muff out.
