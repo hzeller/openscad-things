@@ -1,7 +1,7 @@
 /* Solenoid valve.
  * Input switched to output (down) or exhaust (up)
  */
-$fn=96;
+$fn=48;
 clearance=0.3;
 epsilon=0.02;
 
@@ -61,15 +61,6 @@ module o_ring() {
     color("gray") rotate_extrude(convexity=10) translate([o_ring_radius+o_ring_thick/2, 0, 0]) circle(r=o_ring_thick/2);
 }
 
-module pipe() {
-    difference() {
-	cylinder(r=pipe_dia/2, h=pipe_high);
-	translate([0,0,end_len]) cylinder(r=hollow_dia/2, pipe_high - 2*end_len - o_ring_thick/2);
-	// Cone on top to that things are easily printable.
-	translate([0,0,pipe_high-end_len-o_ring_thick/2]) cylinder(r1=hollow_dia/2, r2=0, h=o_ring_thick/2);
-    }
-}
-
 module magnet(extra=0) {
     color("silver") translate([0,0,-extra]) cylinder(r=magnet_diameter/2+extra,h=magnet_length+2*extra);
 }
@@ -113,16 +104,13 @@ module coil() {
 
 module o_rings() {    
     o_ring();                         // start of inlet
-    translate([0,0,hub]) o_ring();    // between inlet+outlet
     translate([0,0,hub+travel]) o_ring();  // end.
 }
 
 module inner_shifter() {
     difference() {
-	translate([0,0,-end_len]) pipe();
+	translate([0,0,-end_len]) cylinder(r=pipe_dia/2, h=pipe_high);
 	o_rings();
-	translate([0,0,inlet_pos]) channel();
-	translate([0,0,outlet_pos]) channel();	
     }
     translate([0,0,magnet_holder_start]) magnet_holder();
 }
@@ -138,8 +126,10 @@ module valve_block() {
 	    // Hole:
 	    translate([0,0,-epsilon]) cylinder(r=pipe_with_o_ring_radius,h=block_high + 2*epsilon);
 	}
-	translate([0,0,inlet_pos]) channel();
-	translate([0,0,outlet_pos]) channel();
+	union() {
+	    translate([0,0,inlet_pos]) channel();
+	    translate([0,0,outlet_pos]) channel();
+	}
     }
 
     // Add solenoid on top
