@@ -75,4 +75,3 @@ module adapter() {
 }
 
 translate([0, 0, cam_center + 1]) rotate([0, 90, 0]) adapter();
-    
