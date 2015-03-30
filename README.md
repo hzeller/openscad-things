@@ -3,7 +3,7 @@ some designs I want to share somewhere.
 
    - cello-endpin-holder: holds the endpin of a cello ([here an early version] (https://plus.google.com/u/0/+HennerZeller/posts/4s14tKttz5i))
    - dimension-bracket: simpler ruler for printer adjustment
-   - scope phone adapter: an [adapter for my MotoX phone to my oscilloscope](https://plus.google.com/u/0/+HennerZeller/posts/9eWFhvYqgtb)
+   - scope phone adapter: an [adapter for my MotoX phone to my microscope](https://plus.google.com/u/0/+HennerZeller/posts/9eWFhvYqgtb)
    - snap joint test: little test to see how things can be snap joint (not
      terribly successful yet).
    - spool-holder: necessity - an axis adaptor for spools.
