@@ -10,7 +10,7 @@
 //
 // (c) h.zeller@acm.org Creative Commons license BY-SA
 
-$fn=64;
+$fn=128;
 
 epsilon=0.1;
 clearance=0.6;     // Spacing around the screwed down part to allow free rotation
@@ -21,19 +21,19 @@ spring_extra=0;    // How much diameter the spring provides; 0 for no spring.
 
 // Diameters of each spool holder in the stack. Enter all the different spool
 // sizes you have here. You want the biggest first :)
-diameters=[55 - spring_extra,
+diameters=[51 - spring_extra,
            32 - spring_extra];
 
 holder_height=12;      // height of each stack.
-transition=1;          // transitioning between two stacks
+transition=-1;          // transitioning between two stacks
 
-bottom_width=diameters[0] + 20;
+bottom_width=diameters[0] + 25;
 wall_thickness=1;
-foot_thickness=5;
+foot_thickness=4;    // Should be high enough to have the spool over over the Type-A mount screws
 mount_hole=3 + 0.2;  // M3 + fudge
 
-mount_peg_bottom=3 * mount_hole;
-mount_peg_top=5 * mount_hole;
+mount_peg_top=diameters[len(diameters)-1] - 3;
+mount_peg_bottom=mount_peg_top - 2*mount_hole;
 
 spring_width=8;
 spring_springiness_thick=0.8;
