@@ -15,7 +15,11 @@ pkgs.mkShell {
 
       # CAM
       prusa-slicer  
-      lightburn
+      orca-slicer
+      #lightburn  # requires unfree
     ];
-    shellHook = "unset QT_PLUGIN_PATH";
+    shellHook = ''
+       unset QT_PLUGIN_PATH   # lightburn workaround
+       export WEBKIT_DISABLE_DMABUF_RENDERER=1  # orca-slicer work-around
+    '';
 }
