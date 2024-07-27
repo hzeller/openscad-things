@@ -6,7 +6,7 @@
 pkgs.mkShell {
   buildInputs = with pkgs;
     [
-      openscad
+      openscad-unstable
       openscad-lsp
       pstoedit
 
