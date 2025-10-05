@@ -1,5 +1,5 @@
 Some random things with no claim of usefulness :) Mostly for me to dump
-some designs I want to share somewhere.
+some designs I want to share somewhere or not forget.
 
    - cello-endpin-holder: holds the endpin of a cello ([here an early version] (https://plus.google.com/u/0/+HennerZeller/posts/4s14tKttz5i))
    - dimension-bracket: simpler ruler for printer adjustment
@@ -11,3 +11,22 @@ some designs I want to share somewhere.
    - webcam-hood: a hood for my Logitec C920 webcam.
 
 All designs are (c) h.zeller@acm.org and licensed Creative Commons BY-SA.
+
+Update list with:
+```
+(cd img ; for f in *.png ; do NAME=$(basename -s.png $f); echo '[!'"[$NAME](img/$f)]($NAME.scad)"; done)
+```
+[![cello-endpin-holder](img/cello-endpin-holder.png)](cello-endpin-holder.scad)
+[![dimension-bracket](img/dimension-bracket.png)](dimension-bracket.scad)
+[![dosing-funnel-porta](img/dosing-funnel-porta.png)](dosing-funnel-porta.scad)
+[![light-bracket](img/light-bracket.png)](light-bracket.scad)
+[![peristaltic-pump](img/peristaltic-pump.png)](peristaltic-pump.scad)
+[![rift-glass-holder](img/rift-glass-holder.png)](rift-glass-holder.scad)
+[![scope-phone-adapter](img/scope-phone-adapter.png)](scope-phone-adapter.scad)
+[![snap-joint-test](img/snap-joint-test.png)](snap-joint-test.scad)
+[![soap-holder](img/soap-holder.png)](soap-holder.scad)
+[![solenoid-valve](img/solenoid-valve.png)](solenoid-valve.scad)
+[![spool-holder](img/spool-holder.png)](spool-holder.scad)
+[![stacked-spool-holder](img/stacked-spool-holder.png)](stacked-spool-holder.scad)
+[![staircase](img/staircase.png)](staircase.scad)
+[![webcam-hood](img/webcam-hood.png)](webcam-hood.scad)

@@ -27,7 +27,10 @@ stl/soap-holder.stl:
 %.dxf: %.eps
 	pstoedit -psarg "-r300x300" -dt -f dxf:-polyaslines $< $@
 
-stl/%.stl: %.scad
+stl :
+	mkdir -p stl
+
+stl/%.stl: %.scad stl
 	openscad -o $@ -d $@.deps $<
 
 img/%.png: %.scad
