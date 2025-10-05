@@ -15,7 +15,7 @@ All designs are (c) h.zeller@acm.org and licensed Creative Commons BY-SA.
 Update list with:
 
 ```
-SCAD_LIST=$(git ls-tree --full-tree -r --name-only HEAD *.scad)
+SCAD_LIST=$(git ls-tree --full-tree -r --name-only HEAD *.scad | grep -v inc.scad)
 make all-img
 for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.png ; echo "## $NAME"; echo '[!'"[$NAME](img/$NAME.png)]($NAME.scad)"; done
 ```

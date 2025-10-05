@@ -1,4 +1,4 @@
-include <threads.scad>
+include <threads-inc.scad>
 $fn=70;
 e=0.01;
 ramp=8;
