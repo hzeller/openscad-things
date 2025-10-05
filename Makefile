@@ -1,3 +1,5 @@
+OPENSCAD=openscad --backend Manifold
+
 THINGS=$(shell git ls-tree --full-tree -r --name-only HEAD *.scad)
 THING_STL=$(patsubst %.scad, stl/%.stl, $(THINGS))
 THING_PNG=$(patsubst %.scad, img/%.png, $(THINGS))
@@ -20,10 +22,10 @@ stl :
 	mkdir -p stl
 
 stl/%.stl: %.scad stl
-	openscad -o $@ -d $@.deps $<
+	$(OPENSCAD) -o $@ -d $@.deps $<
 
 img/%.png: %.scad
-	openscad --export-format=png -o $@ -d $@.deps $<
+	$(OPENSCAD) --render --export-format=png -o $@ -d $@.deps $<
 
 clean:
 	rm -f $(THING_STL)
