@@ -3,3 +3,6 @@
 *.3mf
 *.lbrn*
 *~
+
+.envrc
+.direnv
