@@ -77,7 +77,9 @@ module drill_guide() {
   }
 }
 
-soap_holder();
-if (with_mount_holes) { // In that case, a drill guide is useful
-  translate([0, 10, 0]) drill_guide();
+rotate([0, 0, 180]) {
+  soap_holder();
+  if (with_mount_holes) { // In that case, a drill guide is useful
+    translate([0, 10, 0]) drill_guide();
+  }
 }
