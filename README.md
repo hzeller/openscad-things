@@ -27,6 +27,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![bialetti-funnel](img/bialetti-funnel.png)](bialetti-funnel.scad)
 ## cello-endpin-holder
 [![cello-endpin-holder](img/cello-endpin-holder.png)](cello-endpin-holder.scad)
+## desk-lampl-swivel
+[![desk-lampl-swivel](img/desk-lampl-swivel.png)](desk-lampl-swivel.scad)
 ## dimension-bracket
 [![dimension-bracket](img/dimension-bracket.png)](dimension-bracket.scad)
 ## dosing-funnel-porta
@@ -51,6 +53,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![mirror-wedge](img/mirror-wedge.png)](mirror-wedge.scad)
 ## peristaltic-pump
 [![peristaltic-pump](img/peristaltic-pump.png)](peristaltic-pump.scad)
+## pi-stand-off
+[![pi-stand-off](img/pi-stand-off.png)](pi-stand-off.scad)
 ## rift-glass-holder
 [![rift-glass-holder](img/rift-glass-holder.png)](rift-glass-holder.scad)
 ## scope-phone-adapter
