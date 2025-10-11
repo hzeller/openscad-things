@@ -25,6 +25,6 @@ module measure_row(over_range=len, tap_offset=5, mini_offset=8) {
 }
 
 difference() {
-  color("red") linear_extrude(h=width) polygon([[0, 0], [0, min_height], [len, height], [len, 0]]);
+  color("blue") linear_extrude(h=width) polygon([[0, 0], [0, min_height], [len, height], [len, 0]]);
   translate([0, 0, width]) measure_row();
 }

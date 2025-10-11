@@ -45,6 +45,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![ikea-fridans-holder](img/ikea-fridans-holder.png)](ikea-fridans-holder.scad)
 ## light-bracket
 [![light-bracket](img/light-bracket.png)](light-bracket.scad)
+## measure-wedge
+[![measure-wedge](img/measure-wedge.png)](measure-wedge.scad)
 ## microscope-camera-sleeve
 [![microscope-camera-sleeve](img/microscope-camera-sleeve.png)](microscope-camera-sleeve.scad)
 ## mini-box
