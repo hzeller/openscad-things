@@ -22,7 +22,7 @@ pkgs.mkShell {
       gcode-cli
 
       # inspection
-      meshlab
+      #meshlab
 
       # CAM
       prusa-slicer
