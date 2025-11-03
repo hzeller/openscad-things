@@ -17,6 +17,7 @@ pkgs.mkShell {
   buildInputs = with pkgs;
     [
       openscad-unstable
+      #openscad
       openscad-lsp
       pstoedit
       gcode-cli
