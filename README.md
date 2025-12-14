@@ -77,6 +77,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![staircase](img/staircase.png)](staircase.scad)
 ## sun-tracker
 [![sun-tracker](img/sun-tracker.png)](sun-tracker.scad)
+## switchbox-gaggia
+[![switchbox-gaggia](img/switchbox-gaggia.png)](switchbox-gaggia.scad)
 ## syringe-piston
 [![syringe-piston](img/syringe-piston.png)](syringe-piston.scad)
 ## vacuum-corner-attach
