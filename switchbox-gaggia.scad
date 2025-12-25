@@ -10,7 +10,7 @@ front_wall=2;
 switch_offset=5;
 
 module zip_tie() {
-  translate([-1.2/2, -60/2, top_thick+1.5]) cube([1.2, 60, 5]);
+  translate([-1.2/2, -60/2, top_thick+2.7]) cube([1.2, 60, 5]);
 }
 
 module switch_block() {
