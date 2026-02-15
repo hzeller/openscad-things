@@ -33,6 +33,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![dimension-bracket](img/dimension-bracket.png)](dimension-bracket.scad)
 ## dosing-funnel-porta
 [![dosing-funnel-porta](img/dosing-funnel-porta.png)](dosing-funnel-porta.scad)
+## feed-through
+[![feed-through](img/feed-through.png)](feed-through.scad)
 ## framework
 [![framework](img/framework.png)](framework.scad)
 ## funnel-holder
