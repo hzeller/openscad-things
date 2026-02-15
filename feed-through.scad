@@ -5,8 +5,8 @@ e=0.01;
 
 include <threads-inc.scad>
 
-through_radius=8;    // curvature to minimize rubbing
-through_hole=11;     // center hole to feed through cable
+through_radius=6;    // curvature to minimize rubbing
+through_hole=13;     // center hole to feed through cable
 wall_thickness=1.8;  // wall we want to go through
 drill_hole=26;       // drill hole through the wall.
 wobbles=5;
@@ -37,7 +37,8 @@ module wobble_grip(wobbles=8, inner=50, wobble_thick=1) {
 module base_doughnut() {
   intersection() {
     rotate_extrude() translate([through_hole/2+through_radius, 0, 0]) circle(r=through_radius);
-    translate([0, 0, -through_radius]) linear_extrude(h=2*through_radius) wobble_grip(wobbles=wobbles, wobble_thick=4, inner=through_hole/2+through_radius+3);
+    wobble_thick=2;
+    translate([0, 0, -through_radius]) linear_extrude(h=2*through_radius) wobble_grip(wobbles=wobbles, wobble_thick=wobble_thick, inner=through_hole/2+2*through_radius-wobble_thick);
   }
 }
 
@@ -61,7 +62,7 @@ module tube(outer=20, inner=10, h=5, tolerance_extra=0) {
   difference() {
     //cylinder(r=outer/2, h=h);
     ScrewThread(outer_diam=outer, height=h, pitch=pitch, tooth_angle=tooth_angle, tolerance=screw_tolerance+tolerance_extra);
-    translate([0, 0, -e]) cylinder(r=inner/2, h=h+2*e);
+    translate([0, 0, -e]) cylinder(r1=inner/2, r2=outer/2-1, h=h+2*e);
   }
 }
 
@@ -76,7 +77,7 @@ module feed_part(lower=true, extra=0) {
       block();
       translate([-50, -50, -100-through_radius-wall_thickness/2+flat_part]) cube([100, 100, 100]);
     }
-    translate([0, 0, 0]) tube(outer=drill_hole-2+extra, inner=drill_hole-2-6-extra, h=through_radius-wall_thickness-2+extra, tolerance_extra=extra);  // fudge
+    translate([0, 0, 0]) tube(outer=drill_hole-2+extra, inner=drill_hole-2-6-extra, h=through_radius-wall_thickness+extra, tolerance_extra=extra);  // fudge
   } else {
     intersection() {
       doughnut_in_wall();
@@ -111,5 +112,5 @@ module print() {
   with_hole();
 }
 
-//print();
-rotate([20, 0, 10]) assemble();  // little angle so that image looks better
+print();
+//rotate([20, 0, 10]) assemble();  // little angle so that image looks better
