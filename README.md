@@ -43,6 +43,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![hp-foot](img/hp-foot.png)](hp-foot.scad)
 ## ikea-fridans-holder
 [![ikea-fridans-holder](img/ikea-fridans-holder.png)](ikea-fridans-holder.scad)
+## jar
+[![jar](img/jar.png)](jar.scad)
 ## light-bracket
 [![light-bracket](img/light-bracket.png)](light-bracket.scad)
 ## measure-wedge
