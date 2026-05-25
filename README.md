@@ -65,6 +65,8 @@ for f in ${SCAD_LIST} ; do NAME="$(basename -s.scad $f)"; git add img/${NAME}.pn
 [![rift-glass-holder](img/rift-glass-holder.png)](rift-glass-holder.scad)
 ## scope-phone-adapter
 [![scope-phone-adapter](img/scope-phone-adapter.png)](scope-phone-adapter.scad)
+## screw-on-hose-connect
+[![screw-on-hose-connect](img/screw-on-hose-connect.png)](screw-on-hose-connect.scad)
 ## sdcard-grabber
 [![sdcard-grabber](img/sdcard-grabber.png)](sdcard-grabber.scad)
 ## snap-joint-test
